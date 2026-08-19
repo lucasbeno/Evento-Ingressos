@@ -31,8 +31,33 @@ Projeto em desenvolvimento. Progresso:
 
 ## Como rodar
 
-Instruções completas de setup (banco de dados, variáveis de ambiente, back-end e front-end) serão
-adicionadas conforme cada parte for implementada.
+### Banco de dados
+
+O projeto usa PostgreSQL hospedado (não precisa instalar Postgres localmente). Crie uma instância
+gratuita em um destes provedores:
+
+- [Neon](https://neon.tech)
+- [Supabase](https://supabase.com)
+
+Copie a connection string gerada.
+
+### Back-end (Java 21+ / Spring Boot)
+
+```bash
+cd backend
+cp .env.example .env
+# edite .env com os dados da sua instância Postgres (DATABASE_URL, DATABASE_USERNAME, DATABASE_PASSWORD)
+./mvnw spring-boot:run
+```
+
+A API sobe em `http://localhost:8080`.
+
+> Requer JDK 21 ou superior. Se o `java` do seu PATH for uma versão antiga, aponte `JAVA_HOME`
+> para um JDK 21+ antes de rodar o `mvnw`.
+
+### Front-end
+
+Instruções serão adicionadas quando o front-end for implementado.
 
 ## Uso de IA
 

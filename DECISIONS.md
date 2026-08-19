@@ -22,9 +22,14 @@ reserva → pagamento → ingresso → validação) funcionar bem de ponta a pon
 - **Front-end: React (Vite + TypeScript).** Vite em vez de Next.js porque o projeto não precisa de
   SSR/rotas de servidor — é uma SPA consumindo uma API própria. Menos configuração, build mais
   rápido.
-- **Banco de dados: PostgreSQL**, via Docker Compose para desenvolvimento local. Migrations com
-  Flyway para o histórico de schema ficar versionado junto com o código (útil também para quem for
-  rodar o projeto do zero).
+- **Banco de dados: PostgreSQL hospedado** (Neon ou Supabase, free tier) desde o desenvolvimento
+  local, em vez de Docker Compose. A máquina de desenvolvimento não tinha Docker instalado, e
+  como o deploy final já ia precisar de um Postgres hospedado mesmo assim, optei por usar a mesma
+  connection string em dev e produção — evita divergência de ambiente e simplifica o README (quem
+  for rodar o projeto só precisa criar uma instância gratuita e colar a connection string). O acesso é
+  via `.env` (não versionado, com `.env.example` como referência), carregado automaticamente pelo
+  `spring-dotenv`. Migrations com Flyway para o histórico de schema ficar versionado junto com o
+  código.
 
 ## API externa
 

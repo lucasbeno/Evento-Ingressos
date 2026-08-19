@@ -38,6 +38,19 @@ ingressos" — um catálogo de shows mapeia mais diretamente para o fluco de neg
 capacidade) do que um catálogo de filmes, que exigiria inventar conceitos como sessão e sala que
 não existem na API do TMDb.
 
+## Modelagem de domínio
+
+`Event` guarda `capacity` e `sold_count` diretamente (em vez de uma tabela de "estoque" separada),
+com um `CHECK` no banco garantindo `sold_count <= capacity`. A reserva (etapa seguinte) vai
+incrementar esse contador com um `UPDATE` condicional atômico (`WHERE sold_count + :qty <=
+capacity`), que é a garantia real contra overselling — não um lock otimista no objeto JPA, que
+falharia sob concorrência real sem retry manual.
+
+Cada unidade de uma `Reservation` vira um `Ticket` individual (reserva de 3 ingressos gera 3
+`Ticket`s). A portaria valida ingresso a ingresso, então cada um precisa do próprio QR e do próprio
+estado (`VALID`/`USED`/`CANCELLED`) — validar a reserva como um todo não permitiria detectar
+que só 2 das 3 pessoas já entraram.
+
 ## Autenticação
 
 JWT com um campo de papel (`role`) no token: `ORGANIZER`, `CUSTOMER`, `GATE`. Sem

@@ -1,6 +1,9 @@
 package com.eventoingressos.backend.common;
 
 import com.eventoingressos.backend.common.exception.EmailAlreadyRegisteredException;
+import com.eventoingressos.backend.common.exception.EventNotFoundException;
+import com.eventoingressos.backend.common.exception.ForbiddenOperationException;
+import com.eventoingressos.backend.common.exception.InvalidEventStateException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -31,5 +34,20 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ApiError> handleBadCredentials(BadCredentialsException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiError.of(ex.getMessage()));
+    }
+
+    @ExceptionHandler(EventNotFoundException.class)
+    public ResponseEntity<ApiError> handleEventNotFound(EventNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiError.of(ex.getMessage()));
+    }
+
+    @ExceptionHandler(ForbiddenOperationException.class)
+    public ResponseEntity<ApiError> handleForbidden(ForbiddenOperationException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiError.of(ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidEventStateException.class)
+    public ResponseEntity<ApiError> handleInvalidState(InvalidEventStateException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiError.of(ex.getMessage()));
     }
 }

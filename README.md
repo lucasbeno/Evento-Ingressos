@@ -21,6 +21,7 @@ Projeto em desenvolvimento. Progresso:
 - [x] Estrutura do repositório e decisões iniciais
 - [x] Modelagem de domínio e banco de dados
 - [x] Autenticação (Organizador / Cliente / Portaria)
+- [x] Gestão de eventos pelo organizador (criar, editar, publicar)
 - [ ] Integração com Ticketmaster Discovery
 - [ ] Fluxo de reserva e pagamento simulado
 - [ ] Geração e validação de ingresso (QR)
@@ -63,6 +64,15 @@ inicialização.
 
 Contas de Organizador e Portaria não têm cadastro público — são criadas via seed (etapa
 futura). O token vai no header `Authorization: Bearer <token>` nas demais requisições.
+
+#### Eventos
+
+- `GET /events` / `GET /events/{id}` — navegação pública, só eventos publicados
+- `POST /organizer/events` — cria evento como rascunho (Organizador)
+- `GET /organizer/events` / `GET /organizer/events/{id}` — eventos do organizador logado, em
+  qualquer status
+- `PUT /organizer/events/{id}` — edita (só enquanto `DRAFT`)
+- `POST /organizer/events/{id}/publish` — publica (só a partir de `DRAFT`)
 
 ### Front-end
 

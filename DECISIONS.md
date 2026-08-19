@@ -81,6 +81,25 @@ voltando 401, mesmo com um token válido. Duas causas, encontradas com log tempo
 Guardo esse histórico aqui porque a causa não é óbvia lendo só o código final, e um leitor
 poderia achar que o `FilterRegistrationBean` é código morto — não é.
 
+## Gestão de eventos pelo organizador
+
+Endpoints de organizador ficam sob `/organizer/events/**`, separados de `/events/**` (navegação
+pública). Isso evita que a regra de autorização precise decidir "GET /events/{id} é público, mas
+GET /organizer/events/{id} não" caso os dois compartilhassem o mesmo prefixo — com prefixos
+diferentes, a regra no `SecurityConfig` é só `hasRole("ORGANIZER")` num path inteiro.
+
+Edição (`PUT`) e publicação só são aceitas enquanto o evento está `DRAFT`. Depois de publicado, o
+evento não pode ser editado por este endpoint — mudar capacidade ou preço depois que o evento já
+está visível (e pode já ter reservas) abriria um espaço de bugs que não faz sentido cobrir neste
+escopo; cancelamento é o item opcional listado no desafio para lidar com "mudei de ideia depois de
+publicar".
+
+Outra causa de `LazyInitializationException`: `EventService` monta o `EventResponse` (que lê
+`organizer.getName()`) *dentro* dos métodos `@Transactional`, não no controller. `organizer` é
+`FetchType.LAZY` no `Event`; se o controller recebesse a entidade `Event` e só montasse o DTO
+depois, a transação já teria fechado e o acesso ao proxy lazy falharia. Os serviços sempre
+devolvem DTOs prontos, nunca entidades JPA cruas.
+
 ## Ingresso e QR
 
 O código do QR não é um UUID aleatório exposto puro: é um token assinado (HMAC) contendo o id

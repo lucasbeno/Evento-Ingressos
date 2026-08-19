@@ -1,0 +1,32 @@
+# --- Java / Maven ---
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# --- Node / React ---
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- Env / secrets ---
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# --- IDE ---
+.idea/
+.vscode/
+*.iml
+.DS_Store
+
+# --- Docker ---
+postgres-data/

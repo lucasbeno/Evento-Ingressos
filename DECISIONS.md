@@ -1,0 +1,64 @@
+# Decisões do projeto
+
+Este arquivo registra as decisões tomadas ao longo do desenvolvimento e o motivo de cada uma,
+para dar contexto a escolhas que, sem explicação, poderiam parecer arbitrárias.
+
+## Escopo e domínio
+
+O desafio pede uma plataforma de eventos e ingressos com três papéis (Organizador, Cliente,
+Portaria). Optei por implementar o fluxo de **pista** (reserva por quantidade) em vez de mapa de
+assentos. O enunciado permite escolher um dos dois, e pista cobre o mesmo problema central —
+controle de concorrência para não vender o mesmo lugar duas vezes — sem a complexidade extra
+de um grid de assentos, que tomaria tempo que prefiro investir em fazer o fluxo completo (busca →
+reserva → pagamento → ingresso → validação) funcionar bem de ponta a ponta, como pede a seção
+"Dica" do desafio.
+
+## Stack
+
+- **Back-end: Java + Spring Boot.** Entre as opções permitidas (Node/Python/Java), Spring Boot
+  força uma separação de camadas mais explícita (controller/service/repository), o que ajuda a
+  manter regras de negócio sensíveis — como impedir overselling e revalidação de ingresso —
+  isoladas e testáveis.
+- **Front-end: React (Vite + TypeScript).** Vite em vez de Next.js porque o projeto não precisa de
+  SSR/rotas de servidor — é uma SPA consumindo uma API própria. Menos configuração, build mais
+  rápido.
+- **Banco de dados: PostgreSQL**, via Docker Compose para desenvolvimento local. Migrations com
+  Flyway para o histórico de schema ficar versionado junto com o código (útil também para quem for
+  rodar o projeto do zero).
+
+## API externa
+
+Escolhi **Ticketmaster Discovery API** em vez de TMDb. O domínio do desafio é "eventos e
+ingressos" — um catálogo de shows mapeia mais diretamente para o fluco de negócio (local, data,
+capacidade) do que um catálogo de filmes, que exigiria inventar conceitos como sessão e sala que
+não existem na API do TMDb.
+
+## Autenticação
+
+JWT com um campo de papel (`role`) no token: `ORGANIZER`, `CUSTOMER`, `GATE`. Sem
+recuperação de senha (explicitamente fora do escopo pedido). Endpoints protegidos por papel via
+guarda de autorização no back-end, não só escondendo botões no front.
+
+## Ingresso e QR
+
+O código do QR não é um UUID aleatório exposto puro: é um token assinado (HMAC) contendo o id
+do ingresso, para que a portaria consiga validar autenticidade sem precisar de round-trip
+adicional, e para que não seja possível forjar um ingresso apenas adivinhando um id sequencial.
+A validação na portaria é idempotente — a segunda tentativa de validar o mesmo ingresso retorna
+"já utilizado", não um novo sucesso.
+
+## Deploy
+
+Front-end na Vercel; back-end e banco em um serviço com suporte a container Java de longa duração
+(Render/Railway — decisão final registrada quando a etapa de deploy acontecer), já que o desafio
+pede publicação para facilitar a avaliação (+1 ponto) e Spring Boot não é serverless-friendly como
+uma função Node/Python seria.
+
+## Uso de IA
+
+Este projeto foi construído em par com Claude (Anthropic), usado como assistente de
+desenvolvimento dentro do editor. O README final vai detalhar em que partes a IA foi usada
+(scaffolding, boilerplate repetitivo) e quais decisões de arquitetura, UX e trade-offs foram
+minhas, conforme pedido no desafio.
+
+*(este arquivo será atualizado a cada etapa do desenvolvimento)*

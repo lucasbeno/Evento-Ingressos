@@ -27,9 +27,11 @@ reserva → pagamento → ingresso → validação) funcionar bem de ponta a pon
   como o deploy final já ia precisar de um Postgres hospedado mesmo assim, optei por usar a mesma
   connection string em dev e produção — evita divergência de ambiente e simplifica o README (quem
   for rodar o projeto só precisa criar uma instância gratuita e colar a connection string). O acesso é
-  via `.env` (não versionado, com `.env.example` como referência), carregado automaticamente pelo
-  `spring-dotenv`. Migrations com Flyway para o histórico de schema ficar versionado junto com o
-  código.
+  via `.env` (não versionado, com `.env.example` como referência), importado nativamente pelo
+  Spring Boot via `spring.config.import=optional:file:.env[.properties]` (a lib `spring-dotenv`
+  que eu tinha usado inicialmente não é compatível com o Spring Boot 4 — troquei por esse
+  mecanismo nativo depois de validar que o boot falhava silenciosamente). Migrations com Flyway
+  para o histórico de schema ficar versionado junto com o código.
 
 ## API externa
 

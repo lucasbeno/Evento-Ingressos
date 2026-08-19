@@ -59,6 +59,28 @@ JWT com um campo de papel (`role`) no token: `ORGANIZER`, `CUSTOMER`, `GATE`. Se
 recuperação de senha (explicitamente fora do escopo pedido). Endpoints protegidos por papel via
 guarda de autorização no back-end, não só escondendo botões no front.
 
+### Dois bugs sutis na configuração do Spring Security
+
+Ao testar o login/JWT de ponta a ponta contra o Neon, toda requisição autenticada continuava
+voltando 401, mesmo com um token válido. Duas causas, encontradas com log temporário:
+
+1. `JwtAuthenticationFilter` é um `@Component` que também implementa `Filter`. O Spring Boot o
+   registra automaticamente como filtro de servlet *global* (fora da cadeia do Spring Security),
+   rodando cedo demais. Como `OncePerRequestFilter` só executa uma vez por requisição, quando a
+   cadeia do Spring Security chegava nele (via `addFilterBefore`), ele já tinha "rodado" e era
+   pulado — a autenticação nunca era setada dentro da cadeia de verdade. Resolvido desabilitando
+   o registro automático com um `FilterRegistrationBean` (`setEnabled(false)`), mantendo só o
+   registro explícito na posição certa.
+2. Depois de corrigir isso, o token válido *ainda* voltava 401 — mas para uma rota inexistente,
+   que deveria dar 404. A causa: quando o Spring não encontra um handler, ele faz um *forward*
+   interno para `/error`, e esse forward passa pela mesma cadeia do Spring Security. Como esse
+   forward chega sem o header `Authorization`, ele é avaliado como anônimo e barrado por
+   `anyRequest().authenticated()`, sobrescrevendo o 404 real por um 401. Resolvido liberando
+   `/error` explicitamente (`permitAll()`), do mesmo jeito que `/auth/**`.
+
+Guardo esse histórico aqui porque a causa não é óbvia lendo só o código final, e um leitor
+poderia achar que o `FilterRegistrationBean` é código morto — não é.
+
 ## Ingresso e QR
 
 O código do QR não é um UUID aleatório exposto puro: é um token assinado (HMAC) contendo o id

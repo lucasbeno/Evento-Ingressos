@@ -11,17 +11,16 @@ As decisões de arquitetura e escopo, e o porquê de cada uma, estão em [DECISI
 
 ## Stack
 
-- **Back-end:** Java + Spring Boot, PostgreSQL, Flyway
+- **Back-end:** Java + Spring Boot, PostgreSQL (hospedado), Flyway, JWT
 - **Front-end:** React + Vite + TypeScript
-- **Infra local:** Docker Compose
 
 ## Status
 
 Projeto em desenvolvimento. Progresso:
 
 - [x] Estrutura do repositório e decisões iniciais
-- [ ] Modelagem de domínio e banco de dados
-- [ ] Autenticação (Organizador / Cliente / Portaria)
+- [x] Modelagem de domínio e banco de dados
+- [x] Autenticação (Organizador / Cliente / Portaria)
 - [ ] Integração com Ticketmaster Discovery
 - [ ] Fluxo de reserva e pagamento simulado
 - [ ] Geração e validação de ingresso (QR)
@@ -47,13 +46,23 @@ Copie a connection string gerada.
 cd backend
 cp .env.example .env
 # edite .env com os dados da sua instância Postgres (DATABASE_URL, DATABASE_USERNAME, DATABASE_PASSWORD)
+# gere um JWT_SECRET aleatório, ex: openssl rand -base64 48
 ./mvnw spring-boot:run
 ```
 
-A API sobe em `http://localhost:8080`.
+A API sobe em `http://localhost:8080`. A migration do Flyway roda automaticamente na primeira
+inicialização.
 
 > Requer JDK 21 ou superior. Se o `java` do seu PATH for uma versão antiga, aponte `JAVA_HOME`
 > para um JDK 21+ antes de rodar o `mvnw`.
+
+#### Autenticação
+
+- `POST /auth/register` — cadastro público, sempre como Cliente (`{"name", "email", "password"}`)
+- `POST /auth/login` — retorna um JWT (`{"email", "password"}`)
+
+Contas de Organizador e Portaria não têm cadastro público — são criadas via seed (etapa
+futura). O token vai no header `Authorization: Bearer <token>` nas demais requisições.
 
 ### Front-end
 

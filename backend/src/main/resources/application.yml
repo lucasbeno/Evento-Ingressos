@@ -26,6 +26,9 @@ app:
   jwt:
     secret: ${JWT_SECRET}
     expiration-minutes: ${JWT_EXPIRATION_MINUTES:1440}
+  ticketmaster:
+    api-key: ${TICKETMASTER_API_KEY:}
+    base-url: https://app.ticketmaster.com/discovery/v2
 
 server:
   port: ${SERVER_PORT:8080}

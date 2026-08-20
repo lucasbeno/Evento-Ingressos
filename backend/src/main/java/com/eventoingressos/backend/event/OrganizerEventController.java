@@ -1,6 +1,7 @@
 package com.eventoingressos.backend.event;
 
 import com.eventoingressos.backend.auth.AuthenticatedPrincipal;
+import com.eventoingressos.backend.event.dto.CreateEventFromCatalogRequest;
 import com.eventoingressos.backend.event.dto.CreateEventRequest;
 import com.eventoingressos.backend.event.dto.EventResponse;
 import com.eventoingressos.backend.event.dto.UpdateEventRequest;
@@ -33,6 +34,13 @@ public class OrganizerEventController {
             @AuthenticationPrincipal AuthenticatedPrincipal organizer,
             @Valid @RequestBody CreateEventRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(eventService.create(organizer, request));
+    }
+
+    @PostMapping("/from-catalog")
+    public ResponseEntity<EventResponse> createFromCatalog(
+            @AuthenticationPrincipal AuthenticatedPrincipal organizer,
+            @Valid @RequestBody CreateEventFromCatalogRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(eventService.createFromCatalog(organizer, request));
     }
 
     @GetMapping

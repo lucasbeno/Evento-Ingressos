@@ -100,6 +100,24 @@ Outra causa de `LazyInitializationException`: `EventService` monta o `EventRespo
 depois, a transação já teria fechado e o acesso ao proxy lazy falharia. Os serviços sempre
 devolvem DTOs prontos, nunca entidades JPA cruas.
 
+## Integração com Ticketmaster
+
+O organizador busca no catálogo (`GET /organizer/catalog/search?keyword=`) e escolhe um item; ao
+criar o evento a partir dele (`POST /organizer/events/from-catalog`), o servidor busca o item de
+novo pelo ID (fonte de verdade, evita que o cliente forje título/local/data) e usa **título,
+imagem, local e data vindos da Ticketmaster** — o organizador só informa capacidade e preço, que a
+Ticketmaster não tem porque não é ela quem está vendendo esses ingressos. Continua indo pro estado
+`DRAFT`, publicado manualmente como qualquer outro evento.
+
+Sem uma `TICKETMASTER_API_KEY` configurada (dev sem chave ainda, ou avaliador sem gerar uma), os
+dois endpoints respondem `502` com uma mensagem clara em vez de travar ou devolver `500` — é uma
+falha de dependência externa, não um bug da aplicação. Testei contra a API real da Ticketmaster
+sem chave e com chave inválida (401 deles, repassado como 502 com o motivo) — não tenho uma chave
+válida ainda, então **o parsing do JSON de resultado real (busca e detalhe de evento) não foi
+validado ponta a ponta**, só revisado contra a documentação da Discovery API. Isso fica registrado
+aqui porque é exatamente o tipo de coisa que o README pede pra sinalizar quando não dá pra
+confirmar que está funcionando.
+
 ## Ingresso e QR
 
 O código do QR não é um UUID aleatório exposto puro: é um token assinado (HMAC) contendo o id

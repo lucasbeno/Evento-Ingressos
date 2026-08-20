@@ -22,7 +22,7 @@ Projeto em desenvolvimento. Progresso:
 - [x] Modelagem de domínio e banco de dados
 - [x] Autenticação (Organizador / Cliente / Portaria)
 - [x] Gestão de eventos pelo organizador (criar, editar, publicar)
-- [ ] Integração com Ticketmaster Discovery
+- [x] Integração com Ticketmaster Discovery ⚠️ ver nota abaixo
 - [ ] Fluxo de reserva e pagamento simulado
 - [ ] Geração e validação de ingresso (QR)
 - [ ] Front-end
@@ -68,11 +68,22 @@ futura). O token vai no header `Authorization: Bearer <token>` nas demais requis
 #### Eventos
 
 - `GET /events` / `GET /events/{id}` — navegação pública, só eventos publicados
-- `POST /organizer/events` — cria evento como rascunho (Organizador)
+- `POST /organizer/events` — cria evento manualmente como rascunho (Organizador)
+- `GET /organizer/catalog/search?keyword=` — busca no catálogo da Ticketmaster (Organizador)
+- `POST /organizer/events/from-catalog` — cria evento a partir de um item do catálogo
+  (`{"externalId", "capacity", "price"}` — título/local/data vêm da Ticketmaster)
 - `GET /organizer/events` / `GET /organizer/events/{id}` — eventos do organizador logado, em
   qualquer status
 - `PUT /organizer/events/{id}` — edita (só enquanto `DRAFT`)
 - `POST /organizer/events/{id}/publish` — publica (só a partir de `DRAFT`)
+
+> ⚠️ **Integração com a Ticketmaster não testada ponta a ponta.** A chamada, o tratamento de erro
+> (chave ausente/inválida) e o parsing foram implementados e revisados contra a documentação da
+> Discovery API, mas eu não tinha uma API key válida disponível durante o desenvolvimento pra
+> confirmar o parsing de um resultado real. Gere uma chave gratuita em
+> [developer.ticketmaster.com](https://developer.ticketmaster.com) e coloque em
+> `TICKETMASTER_API_KEY` no `.env` pra testar. Sem chave, os endpoints respondem `502` com uma
+> mensagem clara em vez de quebrar.
 
 ### Front-end
 

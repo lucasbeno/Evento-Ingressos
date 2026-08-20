@@ -1,9 +1,13 @@
 package com.eventoingressos.backend.event;
 
 import com.eventoingressos.backend.auth.AuthenticatedPrincipal;
+import com.eventoingressos.backend.catalog.TicketmasterClient;
+import com.eventoingressos.backend.catalog.dto.raw.TicketmasterEvent;
+import com.eventoingressos.backend.common.exception.CatalogIntegrationException;
 import com.eventoingressos.backend.common.exception.EventNotFoundException;
 import com.eventoingressos.backend.common.exception.ForbiddenOperationException;
 import com.eventoingressos.backend.common.exception.InvalidEventStateException;
+import com.eventoingressos.backend.event.dto.CreateEventFromCatalogRequest;
 import com.eventoingressos.backend.event.dto.CreateEventRequest;
 import com.eventoingressos.backend.event.dto.EventResponse;
 import com.eventoingressos.backend.event.dto.UpdateEventRequest;
@@ -12,6 +16,7 @@ import com.eventoingressos.backend.user.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,10 +30,13 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
+    private final TicketmasterClient ticketmasterClient;
 
-    public EventService(EventRepository eventRepository, UserRepository userRepository) {
+    public EventService(
+            EventRepository eventRepository, UserRepository userRepository, TicketmasterClient ticketmasterClient) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
+        this.ticketmasterClient = ticketmasterClient;
     }
 
     @Transactional
@@ -44,6 +52,40 @@ public class EventService {
                 .venueName(request.venueName())
                 .venueCity(request.venueCity())
                 .eventDatetime(request.eventDatetime())
+                .capacity(request.capacity())
+                .price(request.price())
+                .status(EventStatus.DRAFT)
+                .build();
+
+        return EventResponse.from(eventRepository.save(event));
+    }
+
+    @Transactional
+    public EventResponse createFromCatalog(
+            AuthenticatedPrincipal organizerPrincipal, CreateEventFromCatalogRequest request) {
+        User organizer = userRepository.findById(organizerPrincipal.userId())
+                .orElseThrow(() -> new IllegalStateException("Usuário autenticado não encontrado"));
+
+        TicketmasterEvent catalogEvent = ticketmasterClient.getById(request.externalId());
+
+        if (catalogEvent.startDateTime() == null) {
+            throw new CatalogIntegrationException(
+                    "Este evento do catálogo não tem uma data/hora definida — escolha outro ou crie manualmente");
+        }
+        if (catalogEvent.venueName() == null) {
+            throw new CatalogIntegrationException(
+                    "Este evento do catálogo não tem um local definido — escolha outro ou crie manualmente");
+        }
+
+        Event event = Event.builder()
+                .organizer(organizer)
+                .title(catalogEvent.name())
+                .externalSource(EventSource.TICKETMASTER)
+                .externalId(catalogEvent.id())
+                .imageUrl(catalogEvent.imageUrl())
+                .venueName(catalogEvent.venueName())
+                .venueCity(catalogEvent.venueCity())
+                .eventDatetime(Instant.parse(catalogEvent.startDateTime()))
                 .capacity(request.capacity())
                 .price(request.price())
                 .status(EventStatus.DRAFT)

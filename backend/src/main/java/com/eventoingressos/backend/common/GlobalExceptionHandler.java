@@ -1,5 +1,6 @@
 package com.eventoingressos.backend.common;
 
+import com.eventoingressos.backend.common.exception.CatalogIntegrationException;
 import com.eventoingressos.backend.common.exception.EmailAlreadyRegisteredException;
 import com.eventoingressos.backend.common.exception.EventNotFoundException;
 import com.eventoingressos.backend.common.exception.ForbiddenOperationException;
@@ -49,5 +50,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidEventStateException.class)
     public ResponseEntity<ApiError> handleInvalidState(InvalidEventStateException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiError.of(ex.getMessage()));
+    }
+
+    @ExceptionHandler(CatalogIntegrationException.class)
+    public ResponseEntity<ApiError> handleCatalogIntegration(CatalogIntegrationException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(ApiError.of(ex.getMessage()));
     }
 }

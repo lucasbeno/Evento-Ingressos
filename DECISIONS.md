@@ -196,10 +196,24 @@ runtime, não hardcoded de outra fonte.
 
 ## Deploy
 
-Front-end na Vercel; back-end e banco em um serviço com suporte a container Java de longa duração
-(Render/Railway — decisão final registrada quando a etapa de deploy acontecer), já que o desafio
-pede publicação para facilitar a avaliação (+1 ponto) e Spring Boot não é serverless-friendly como
-uma função Node/Python seria.
+Front-end na Vercel; back-end no Render via Docker, banco continua no Neon (já hospedado desde o
+início). Render não tem runtime nativo para Java (só JS/TS, Python, Ruby, Go, Rust, Elixir —
+conferido na documentação deles antes de decidir, não assumido), então o back-end precisa de um
+`Dockerfile` — o motivo real de reintroduzir Docker no projeto depois de ter descartado ele lá no
+início por falta de Docker Desktop na máquina de dev: aqui quem builda a imagem é o Render, não
+minha máquina, então a ausência local deixa de ser um bloqueio. Escolhido Render em vez de Railway
+porque tem free tier sem pedir cartão de crédito (a instância grátis dorme após ~15min sem uso;
+documentado no README que a primeira requisição depois disso demora pra acordar).
+
+`render.yaml` na raiz do repo como Blueprint — define o serviço, aponta pro `Dockerfile`, e marca
+os secrets (`DATABASE_URL`, `JWT_SECRET`, etc.) como `sync: false` ou `generateValue: true` em vez
+de deixar valores no arquivo versionado. CORS precisou de configuração nova no back-end
+(`SecurityConfig`, origem lida de `CORS_ALLOWED_ORIGINS`) — não existia até agora porque front e
+back sempre rodaram na mesma origem lógica em dev (proxy do Vite); front e back publicados em
+domínios diferentes é a primeira vez que isso importa de verdade.
+
+Não consegui testar o `Dockerfile` localmente — a mesma ausência de Docker Desktop que motivou
+usar Postgres hospedado desde o início. A primeira validação real é o build do próprio Render.
 
 ## Imagem do evento na criação manual
 

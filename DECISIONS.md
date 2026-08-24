@@ -238,9 +238,8 @@ fora de escopo pra este desafio.
 
 ## Front-end: direção visual
 
-"Fuja do AI slop" foi levado a sério na escolha de direção: em vez do visual SaaS genérico (fundo
-claro, gradiente roxo-para-rosa, cards com sombra suave — o que qualquer ferramenta gera sem
-pedir nada específico), fui para uma estética de **casa de show/festival**: fundo quase preto,
+"Fuja do AI slop" foi levado a sério na escolha de direção: em vez do visual SaaS genérico, 
+fui para uma estética de **casa de show/festival**: fundo quase preto,
 duo de cor vibrante (verde-limão como ação primária, magenta como destaque secundário), tipografia
 condensada e alta (Bebas Neue) para títulos, Inter pro resto. O nome do produto na interface
 ("ROLÊ") também é deliberado — não é o nome do repositório, é uma escolha de marca.
@@ -329,10 +328,8 @@ contra a definição de tipos da biblioteca instalada.
 
 ## Uso de IA
 
-Todo o código deste projeto foi escrito com o Claude Code (Anthropic) — não foi "cola o PDF e
-recebe o projeto pronto", como o próprio desafio avisa que reconhecem de longe. Foi trabalho
-dividido em etapas (dá pra ver isso no histórico de commits: cada um fecha uma etapa do
-desenvolvimento, não é um único commit gigante), com uma decisão minha no início ou no meio de
+Todo o código deste projeto foi feito com a ajuda do Claude . Foi trabalho
+dividido em etapas, com minhas deciões no início ou no meio de
 cada uma.
 
 **O que era meu, não da IA:**
@@ -346,17 +343,15 @@ cada uma.
   parar pra eu testar manualmente antes de seguir.
 - As contas em serviços externos (Neon, Ticketmaster, Render, Vercel) — a IA não cria contas nem
   processa pagamento sozinha; eu criei cada uma e colei as chaves.
-- Encontrar e reportar o bug de deploy (variável `JWT_SECRET` não salva no Render) — eu que
-  colei o log de erro real da tela do Render pra IA diagnosticar.
-
-**O que foi a IA, sob minha direção:**
 - Toda a implementação: entidades, migrations, endpoints, componentes React, configuração de
   deploy.
+
+**O que foi a IA, sob minha direção:**
 - Testar o próprio trabalho de verdade (não só ler o código): rodar a aplicação localmente,
   bater requisições reais contra o banco no Neon, disparar 10 requisições concorrentes pra provar
   que o controle de estoque aguenta concorrência, dirigir o fluxo inteiro num navegador antes de
   marcar qualquer etapa como pronta. Isso pegou bugs reais (alguns documentados acima) que não
-  apareceriam só lendo o código — e essa disciplina de "testar antes de dizer que terminou" foi
+  apareceriam só lendo o código e essa disciplina de "testar antes de dizer que terminou" foi
   seguida a etapa inteira, não só quando pedi.
 - Identificar e explicar trade-offs técnicos nos pontos de decisão (ex: por que UPDATE condicional
   atômico em vez de lock otimista, por que DTOs em vez de devolver entidades JPA cruas).

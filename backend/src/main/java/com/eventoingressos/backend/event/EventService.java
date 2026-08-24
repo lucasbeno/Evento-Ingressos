@@ -49,6 +49,7 @@ public class EventService {
                 .title(request.title())
                 .description(request.description())
                 .externalSource(EventSource.MANUAL)
+                .imageUrl(request.imageUrl())
                 .venueName(request.venueName())
                 .venueCity(request.venueCity())
                 .eventDatetime(request.eventDatetime())
@@ -104,6 +105,7 @@ public class EventService {
 
         event.setTitle(request.title());
         event.setDescription(request.description());
+        event.setImageUrl(request.imageUrl());
         event.setVenueName(request.venueName());
         event.setVenueCity(request.venueCity());
         event.setEventDatetime(request.eventDatetime());

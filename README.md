@@ -70,7 +70,8 @@ futura). O token vai no header `Authorization: Bearer <token>` nas demais requis
 #### Eventos
 
 - `GET /events` / `GET /events/{id}` — navegação pública, só eventos publicados
-- `POST /organizer/events` — cria evento manualmente como rascunho (Organizador)
+- `POST /organizer/events` — cria evento manualmente como rascunho (Organizador). `imageUrl` é
+  opcional (cole a URL de uma imagem).
 - `GET /organizer/catalog/search?keyword=` — busca no catálogo da Ticketmaster (Organizador)
 - `POST /organizer/events/from-catalog` — cria evento a partir de um item do catálogo
   (`{"externalId", "capacity", "price"}` — título/local/data vêm da Ticketmaster)

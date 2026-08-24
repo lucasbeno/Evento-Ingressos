@@ -13,6 +13,7 @@ import java.time.Instant;
 public record UpdateEventRequest(
         @NotBlank(message = "Título é obrigatório") String title,
         String description,
+        String imageUrl,
         @NotBlank(message = "Local é obrigatório") String venueName,
         @NotBlank(message = "Cidade é obrigatória") String venueCity,
         @NotNull(message = "Data é obrigatória") @Future(message = "Data deve ser no futuro") Instant eventDatetime,

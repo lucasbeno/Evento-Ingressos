@@ -205,6 +205,15 @@ Front-end na Vercel; back-end e banco em um serviço com suporte a container Jav
 pede publicação para facilitar a avaliação (+1 ponto) e Spring Boot não é serverless-friendly como
 uma função Node/Python seria.
 
+## Imagem do evento na criação manual
+
+`CreateEventRequest`/`UpdateEventRequest` ganharam um campo `imageUrl` opcional. Antes disso, só
+evento montado a partir do catálogo da Ticketmaster tinha imagem (vem pronta da API); criação
+manual deixava `image_url` sempre nulo, e a tela pública mostrava um placeholder ("ROLÊ") em texto.
+Aceitar uma URL colada pelo organizador é a solução mais simples que resolve o problema real (não
+ter nenhuma imagem sem catálogo) sem implicar upload de arquivo, storage, ou infraestrutura nova —
+fora de escopo pra este desafio.
+
 ## Front-end: direção visual
 
 "Fuja do AI slop" foi levado a sério na escolha de direção: em vez do visual SaaS genérico (fundo

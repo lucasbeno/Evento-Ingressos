@@ -87,4 +87,15 @@ public class ReservationService {
         }
         return reservation;
     }
+
+    /**
+     * Igual a getOwned, mas já devolve o DTO — para quem só precisa
+     * exibir a reserva (o controller), não mutá-la (PaymentService usa
+     * getOwned diretamente). "event" é LAZY, então mapear tem que
+     * acontecer aqui dentro, não depois que a transação já fechou.
+     */
+    @Transactional(readOnly = true)
+    public ReservationResponse getOwnedResponse(UUID reservationId, AuthenticatedPrincipal customerPrincipal) {
+        return ReservationResponse.from(getOwned(reservationId, customerPrincipal));
+    }
 }

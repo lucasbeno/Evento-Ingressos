@@ -205,6 +205,56 @@ Front-end na Vercel; back-end e banco em um serviço com suporte a container Jav
 pede publicação para facilitar a avaliação (+1 ponto) e Spring Boot não é serverless-friendly como
 uma função Node/Python seria.
 
+## Front-end: direção visual
+
+"Fuja do AI slop" foi levado a sério na escolha de direção: em vez do visual SaaS genérico (fundo
+claro, gradiente roxo-para-rosa, cards com sombra suave — o que qualquer ferramenta gera sem
+pedir nada específico), fui para uma estética de **casa de show/festival**: fundo quase preto,
+duo de cor vibrante (verde-limão como ação primária, magenta como destaque secundário), tipografia
+condensada e alta (Bebas Neue) para títulos, Inter pro resto. O nome do produto na interface
+("ROLÊ") também é deliberado — não é o nome do repositório, é uma escolha de marca.
+
+Um detalhe que só faz sentido dentro dessa referência: o card de ingresso (`TicketStub`) tem um
+recorte de meio-círculo em cada lateral (`.ticket-perforation` no `index.css`, via `mask-image`
+com dois `radial-gradient`), imitando o canhoto picotado de um ingresso de papel de verdade — um
+detalhe pequeno, mas é exatamente o tipo de coisa que "ninguém pensa em fazer" quando só pede pra
+IA gerar uma tela.
+
+## Front-end: stack e arquitetura
+
+- **Vite + React + TypeScript**, sem framework full-stack (Next.js): é uma SPA consumindo uma API
+  própria, sem necessidade de SSR/rotas de servidor.
+- **Tailwind CSS v4** (`@tailwindcss/vite`, config só em CSS via `@theme` — sem `tailwind.config.js`
+  separado): define os tokens de design (cores, fontes) uma vez, usados em todo o app.
+- **TanStack Query** para dados do servidor (cache, loading/error state) em vez de
+  `useEffect`+`useState` manual espalhado pelos componentes.
+- **react-hook-form + zod** nos formulários (login, cadastro, checkout) — validação no cliente
+  espelhando as mesmas regras do back-end (ex: cartão de 13–19 dígitos), sem reimplementar
+  validação por componente.
+- Autenticação: token + dados do usuário em `localStorage`, restaurado no load. Sem refresh token
+  — o JWT dura 24h (configurável), e se expirar no meio de uma sessão o usuário só precisa
+  logar de novo. Implementar refresh token seria complexidade desproporcional ao escopo.
+- `vite.config.ts` faz proxy de `/api` pro backend local em dev (evita CORS); em produção, a
+  origem vem de `VITE_API_URL` (ver `.env.example`), então o backend precisa liberar CORS pra
+  origem do front-end publicado — a fazer na etapa de deploy.
+
+## Ambiente: Node.js
+
+A máquina de desenvolvimento não tinha Node.js instalado (só o backend Java já tinha sido
+configurado até então). Instalado via `winget install OpenJS.NodeJS.LTS`, com autorização
+explícita antes de instalar software no sistema.
+
+## Dois bugs reais encontrados testando no navegador de verdade
+
+Peço desculpa pela repetição, mas ela é o ponto: o mesmo bug de `LazyInitializationException` (ver
+"Gestão de eventos pelo organizador" acima) apareceu de novo, desta vez em `GET /reservations/{id}`
+— endpoint que eu tinha acabado de adicionar especificamente para a tela de checkout poder buscar
+a reserva de forma resiliente a refresh de página (antes disso, o front dependia só do estado de
+navegação do React Router, que se perde num F5). Só apareceu porque testei o fluxo de checkout de
+verdade num navegador contra o backend real — lendo o código isolado, os dois pareciam corretos.
+Corrigido do mesmo jeito que da primeira vez: o service devolve o DTO já mapeado dentro da
+transação (`getOwnedResponse`), não a entidade JPA crua.
+
 ## Uso de IA
 
 Este projeto foi construído em par com Claude (Anthropic), usado como assistente de

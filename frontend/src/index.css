@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-sans: 'Inter', sans-serif;
+
+  --color-ink: #0a0a0f;
+  --color-surface: #15141c;
+  --color-surface-raised: #1c1a25;
+  --color-border: #2a2833;
+
+  --color-text: #f5f4f7;
+  --color-text-muted: #a8a5b3;
+  --color-text-faint: #6b6876;
+
+  --color-lime: #d4ff3f;
+  --color-lime-dim: #a8cc32;
+  --color-magenta: #ff3ea5;
+  --color-magenta-dim: #cc3284;
+
+  --color-success: #22c55e;
+  --color-danger: #ef4444;
+  --color-warning: #f59e0b;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--color-ink);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  background-image:
+    radial-gradient(circle at 15% 0%, rgba(212, 255, 63, 0.08), transparent 40%),
+    radial-gradient(circle at 85% 20%, rgba(255, 62, 165, 0.08), transparent 40%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* Recorte de canhoto de ingresso: um semicírculo "mordido" em cada
+   lateral, como um ingresso de papel de verdade — usado no TicketStub.
+   Duas camadas de máscara independentes (uma por lateral); "add" (o
+   padrão) une as duas áreas ocultas sem que elas se sobreponham. */
+.ticket-perforation {
+  --notch: 14px;
+  mask-image:
+    radial-gradient(circle var(--notch) at 0 50%, transparent 98%, black 100%),
+    radial-gradient(circle var(--notch) at 100% 50%, transparent 98%, black 100%);
+}

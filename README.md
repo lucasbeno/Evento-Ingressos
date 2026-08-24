@@ -12,7 +12,7 @@ As decisões de arquitetura e escopo, e o porquê de cada uma, estão em [DECISI
 ## Stack
 
 - **Back-end:** Java + Spring Boot, PostgreSQL (hospedado), Flyway, JWT
-- **Front-end:** React + Vite + TypeScript
+- **Front-end:** React + Vite + TypeScript, Tailwind CSS v4, TanStack Query, react-hook-form + zod
 
 ## Status
 
@@ -27,7 +27,8 @@ Projeto em desenvolvimento. Progresso:
 - [x] Pagamento simulado + geração de ingresso com QR assinado
 - [x] Compartilhamento de ingresso por link + validação na portaria
 - [x] Dados de teste (seed)
-- [ ] Front-end
+- [x] Front-end: fluxo do cliente (navegar, reservar, pagar, meus ingressos, compartilhar)
+- [ ] Front-end: painel do organizador e tela de portaria
 - [ ] Deploy
 
 ## Como rodar
@@ -105,7 +106,17 @@ qualquer outro número de 13–19 dígitos aprova o pagamento.
 
 ### Front-end
 
-Instruções serão adicionadas quando o front-end for implementado.
+Requer [Node.js](https://nodejs.org) 20+.
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Abre em `http://localhost:5173`. Em desenvolvimento, o Vite faz proxy de `/api` para o back-end
+em `http://localhost:8080` (ver `vite.config.ts`) — não precisa de `.env` nem CORS configurado
+localmente. Rode o back-end primeiro.
 
 ## Dados de teste
 

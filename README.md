@@ -22,7 +22,7 @@ Projeto em desenvolvimento. Progresso:
 - [x] Modelagem de domínio e banco de dados
 - [x] Autenticação (Organizador / Cliente / Portaria)
 - [x] Gestão de eventos pelo organizador (criar, editar, publicar)
-- [x] Integração com Ticketmaster Discovery ⚠️ ver nota abaixo
+- [x] Integração com Ticketmaster Discovery (testada com chave real)
 - [x] Fluxo de reserva (controle de concorrência testado sob carga real)
 - [x] Pagamento simulado + geração de ingresso com QR assinado
 - [x] Compartilhamento de ingresso por link + validação na portaria
@@ -97,13 +97,11 @@ futura). O token vai no header `Authorization: Bearer <token>` nas demais requis
 real. **Cartão terminado em `0002` simula recusa** (convenção de cartão de teste do Stripe);
 qualquer outro número de 13–19 dígitos aprova o pagamento.
 
-> ⚠️ **Integração com a Ticketmaster não testada ponta a ponta.** A chamada, o tratamento de erro
-> (chave ausente/inválida) e o parsing foram implementados e revisados contra a documentação da
-> Discovery API, mas eu não tinha uma API key válida disponível durante o desenvolvimento pra
-> confirmar o parsing de um resultado real. Gere uma chave gratuita em
-> [developer.ticketmaster.com](https://developer.ticketmaster.com) e coloque em
-> `TICKETMASTER_API_KEY` no `.env` pra testar. Sem chave, os endpoints respondem `502` com uma
-> mensagem clara em vez de quebrar.
+Precisa de uma `TICKETMASTER_API_KEY` (gere uma gratuita em
+[developer.ticketmaster.com](https://developer.ticketmaster.com) e coloque no `.env`). Testado
+ponta a ponta com uma chave real: busca no catálogo e criação de evento a partir de um item
+(título, imagem, local e data vindos corretos da Ticketmaster). Sem chave configurada, os
+endpoints respondem `502` com uma mensagem clara em vez de quebrar.
 
 ### Front-end
 

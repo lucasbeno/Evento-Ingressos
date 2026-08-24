@@ -109,14 +109,10 @@ imagem, local e data vindos da Ticketmaster** — o organizador só informa capa
 Ticketmaster não tem porque não é ela quem está vendendo esses ingressos. Continua indo pro estado
 `DRAFT`, publicado manualmente como qualquer outro evento.
 
-Sem uma `TICKETMASTER_API_KEY` configurada (dev sem chave ainda, ou avaliador sem gerar uma), os
-dois endpoints respondem `502` com uma mensagem clara em vez de travar ou devolver `500` — é uma
-falha de dependência externa, não um bug da aplicação. Testei contra a API real da Ticketmaster
-sem chave e com chave inválida (401 deles, repassado como 502 com o motivo) — não tenho uma chave
-válida ainda, então **o parsing do JSON de resultado real (busca e detalhe de evento) não foi
-validado ponta a ponta**, só revisado contra a documentação da Discovery API. Isso fica registrado
-aqui porque é exatamente o tipo de coisa que o README pede pra sinalizar quando não dá pra
-confirmar que está funcionando.
+Sem uma `TICKETMASTER_API_KEY` configurada, os dois endpoints respondem `502` com uma mensagem
+clara em vez de travar ou devolver `500` — é uma falha de dependência externa, não um bug da
+aplicação. Testado contra a API real com chave válida: busca por palavra-chave e criação de evento
+a partir de um item real do catálogo, com título/imagem/local/data vindos corretos.
 
 ## Fluxo de reserva
 

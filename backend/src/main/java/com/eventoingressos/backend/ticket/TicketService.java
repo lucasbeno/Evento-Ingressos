@@ -1,0 +1,25 @@
+package com.eventoingressos.backend.ticket;
+
+import com.eventoingressos.backend.auth.AuthenticatedPrincipal;
+import com.eventoingressos.backend.ticket.dto.TicketResponse;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+public class TicketService {
+
+    private final TicketRepository ticketRepository;
+
+    public TicketService(TicketRepository ticketRepository) {
+        this.ticketRepository = ticketRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public List<TicketResponse> listMine(AuthenticatedPrincipal customerPrincipal) {
+        return ticketRepository.findByReservationCustomerIdOrderByCreatedAtDesc(customerPrincipal.userId()).stream()
+                .map(TicketResponse::from)
+                .toList();
+    }
+}

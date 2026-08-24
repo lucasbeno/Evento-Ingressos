@@ -24,8 +24,8 @@ Projeto em desenvolvimento. Progresso:
 - [x] Gestão de eventos pelo organizador (criar, editar, publicar)
 - [x] Integração com Ticketmaster Discovery ⚠️ ver nota abaixo
 - [x] Fluxo de reserva (controle de concorrência testado sob carga real)
-- [ ] Pagamento simulado
-- [ ] Geração e validação de ingresso (QR)
+- [x] Pagamento simulado + geração de ingresso com QR assinado
+- [ ] Validação de ingresso na portaria
 - [ ] Front-end
 - [ ] Dados de teste (seed)
 - [ ] Deploy
@@ -82,6 +82,14 @@ futura). O token vai no header `Authorization: Bearer <token>` nas demais requis
 
 - `POST /reservations` — reserva ingressos (`{"eventId", "quantity"}`, máx. 10, Cliente)
 - `GET /reservations` — minhas reservas
+- `POST /reservations/{id}/pay` — paga a reserva (dados de cartão simulados, ver abaixo)
+- `GET /tickets/mine` — meus ingressos, com QR code
+
+#### Pagamento simulado
+
+`{"cardNumber", "cardHolderName", "expiry" (MM/AA), "cvv"}`. Nenhum dado é enviado a um gateway
+real. **Cartão terminado em `0002` simula recusa** (convenção de cartão de teste do Stripe);
+qualquer outro número de 13–19 dígitos aprova o pagamento.
 
 > ⚠️ **Integração com a Ticketmaster não testada ponta a ponta.** A chamada, o tratamento de erro
 > (chave ausente/inválida) e o parsing foram implementados e revisados contra a documentação da

@@ -25,8 +25,11 @@ import java.util.UUID;
 @Builder
 public class Ticket {
 
+    // Sem @GeneratedValue: o id precisa existir *antes* do insert, porque
+    // entra na assinatura HMAC do QR code (ver QrCodeService). O gerador de
+    // UUID do Hibernate só atribui o valor no momento do insert, tarde
+    // demais para isso — o id é sempre setado explicitamente pelo chamador.
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

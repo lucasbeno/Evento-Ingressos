@@ -6,6 +6,7 @@ import com.eventoingressos.backend.common.exception.EventNotFoundException;
 import com.eventoingressos.backend.common.exception.ForbiddenOperationException;
 import com.eventoingressos.backend.common.exception.InsufficientAvailabilityException;
 import com.eventoingressos.backend.common.exception.InvalidEventStateException;
+import com.eventoingressos.backend.common.exception.InvalidReservationStateException;
 import com.eventoingressos.backend.common.exception.ReservationNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,5 +68,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ReservationNotFoundException.class)
     public ResponseEntity<ApiError> handleReservationNotFound(ReservationNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiError.of(ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidReservationStateException.class)
+    public ResponseEntity<ApiError> handleInvalidReservationState(InvalidReservationStateException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiError.of(ex.getMessage()));
     }
 }

@@ -137,13 +137,29 @@ com capacidade 5 resultaram em exatamente 5 reservas confirmadas e 5 recusadas, 
 final igual a 5 — validando que o UPDATE condicional atômico (`EventRepository.tryReserveStock`)
 realmente impede overselling sob carga, não só na leitura do código.
 
+## Pagamento simulado
+
+`POST /reservations/{id}/pay` recebe dados de cartão com formato validado (não processados por
+gateway nenhum) e simula recusa quando o número do cartão termina em `0002` — convenção de sandbox
+de pagamento (cartões de teste do Stripe usam o mesmo padrão), então quem for avaliar já reconhece
+o gatilho sem eu precisar inventar uma UI de "forçar erro". Documentado no README em "dados de
+teste". Reserva paga/recusada não pode ser paga de novo (`409`); recusa devolve o estoque reservado
+(`EventRepository.releaseStock`), senão o lugar ficaria preso pra sempre numa reserva morta.
+
 ## Ingresso e QR
 
-O código do QR não é um UUID aleatório exposto puro: é um token assinado (HMAC) contendo o id
-do ingresso, para que a portaria consiga validar autenticidade sem precisar de round-trip
-adicional, e para que não seja possível forjar um ingresso apenas adivinhando um id sequencial.
-A validação na portaria é idempotente — a segunda tentativa de validar o mesmo ingresso retorna
-"já utilizado", não um novo sucesso.
+O código do QR não é o UUID puro do ingresso: é `"{id}.{assinatura HMAC-SHA256}"`
+(`QrCodeService`), assinado com um segredo do servidor (`TICKET_QR_SECRET`, separado do
+`JWT_SECRET` — segredos com propósitos diferentes não devem compartilhar chave). Sem o segredo,
+não dá pra forjar um QR válido mesmo sabendo o id de um ingresso real — a portaria (próxima etapa)
+recomputa a assinatura em vez de confiar no que veio no código escaneado.
+
+O id do `Ticket` não usa `@GeneratedValue`: ele precisa existir *antes* do insert porque entra na
+assinatura do QR, e o gerador de UUID do Hibernate só atribui o valor no momento do insert — tarde
+demais. O id é gerado em `PaymentService` (`UUID.randomUUID()`) e setado explicitamente.
+
+Cada unidade de uma reserva paga vira um `Ticket` individual com seu próprio QR — testado: reserva
+de 2 ingressos aprovada gera exatamente 2 tickets com QR codes distintos.
 
 ## Deploy
 

@@ -286,6 +286,26 @@ verdade num navegador contra o backend real — lendo o código isolado, os dois
 Corrigido do mesmo jeito que da primeira vez: o service devolve o DTO já mapeado dentro da
 transação (`getOwnedResponse`), não a entidade JPA crua.
 
+## Cancelamento de evento
+
+Item opcional do desafio ("cancelamento com devolução ao estoque"), adicionado depois do deploy —
+não fazia parte do escopo mínimo, mas era um buraco real: não existia nenhuma forma de tirar um
+evento do ar depois de publicado. `POST /organizer/events/{id}/cancel` marca o evento como
+`CANCELLED` e, em cascata: cancela reservas com pagamento pendente daquele evento (é aí que entra
+a "devolução ao estoque" — ninguém paga por um evento que não vai mais acontecer) e invalida os
+ingressos já pagos (`VALID` → `CANCELLED`), pra portaria não continuar aceitando ingresso de um
+evento cancelado — o `GateService` já tinha essa checagem pronta desde a etapa de portaria, só
+precisava que algo de fato marcasse o ticket como `CANCELLED`.
+
+Reserva que já foi **paga** continua com status `PAID` — isso é fato histórico, não muda; só o
+ingresso em si vira inválido. Não implementei estorno porque o pagamento é simulado (não há
+dinheiro de verdade circulando) e o desafio explicitamente não pede nota fiscal nem esse tipo de
+fluxo financeiro.
+
+Testado ponta a ponta: evento com um ingresso pago e uma reserva pendente, cancelado — reserva
+pendente vira `CANCELLED`, evento some da navegação pública, e o ingresso que era `VALID` passa a
+ser rejeitado na portaria com "Ingresso cancelado" em vez de validar incorretamente.
+
 ## Front-end: painel do organizador e portaria
 
 Criação de evento tem duas abas — manual e "do catálogo" — em vez de duas telas separadas, porque

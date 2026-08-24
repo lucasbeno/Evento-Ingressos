@@ -18,6 +18,8 @@ public interface TicketRepository extends JpaRepository<Ticket, UUID> {
 
     List<Ticket> findByReservationCustomerIdOrderByCreatedAtDesc(UUID customerId);
 
+    List<Ticket> findByEventIdAndStatus(UUID eventId, TicketStatus status);
+
     /**
      * Mesmo princípio do EventRepository.tryReserveStock: um UPDATE
      * condicional atômico, não um "ler status, decidir, gravar" em duas

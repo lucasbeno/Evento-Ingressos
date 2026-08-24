@@ -67,4 +67,10 @@ public class OrganizerEventController {
             @AuthenticationPrincipal AuthenticatedPrincipal organizer, @PathVariable UUID id) {
         return eventService.publish(id, organizer);
     }
+
+    @PostMapping("/{id}/cancel")
+    public EventResponse cancel(
+            @AuthenticationPrincipal AuthenticatedPrincipal organizer, @PathVariable UUID id) {
+        return eventService.cancel(id, organizer);
+    }
 }

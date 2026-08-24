@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 import { apiErrorMessage } from '../../api/client'
-import { getMyOrganizerEvent, publishEvent, updateEvent } from '../../api/organizerEvents'
+import { cancelEvent, getMyOrganizerEvent, publishEvent, updateEvent } from '../../api/organizerEvents'
 import { Badge } from '../../components/Badge'
 import { Button } from '../../components/Button'
 import { ErrorState } from '../../components/ErrorState'
@@ -86,6 +86,14 @@ export function OrganizerEventDetailPage() {
     },
   })
 
+  const cancelMutation = useMutation({
+    mutationFn: () => cancelEvent(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['organizer', 'event', id] })
+      queryClient.invalidateQueries({ queryKey: ['organizer', 'events'] })
+    },
+  })
+
   if (isLoading) return <Spinner label="Carregando evento…" />
   if (error || !event) return <ErrorState message={apiErrorMessage(error, 'Evento não encontrado')} />
 
@@ -99,16 +107,36 @@ export function OrganizerEventDetailPage() {
           </div>
           <h1 className="mt-1 font-display text-5xl tracking-wide text-text">{event.title}</h1>
         </div>
-        {event.status === 'DRAFT' && (
-          <Button onClick={() => publishMutation.mutate()} disabled={publishMutation.isPending}>
-            {publishMutation.isPending ? 'Publicando…' : 'Publicar evento'}
-          </Button>
-        )}
+        <div className="flex gap-2">
+          {event.status === 'DRAFT' && (
+            <Button onClick={() => publishMutation.mutate()} disabled={publishMutation.isPending}>
+              {publishMutation.isPending ? 'Publicando…' : 'Publicar evento'}
+            </Button>
+          )}
+          {event.status !== 'CANCELLED' && (
+            <Button
+              variant="danger"
+              disabled={cancelMutation.isPending}
+              onClick={() => {
+                if (window.confirm('Cancelar este evento? Ingressos já emitidos deixam de ser válidos.')) {
+                  cancelMutation.mutate()
+                }
+              }}
+            >
+              {cancelMutation.isPending ? 'Cancelando…' : 'Cancelar evento'}
+            </Button>
+          )}
+        </div>
       </div>
 
       {publishMutation.error && (
         <div className="mb-4">
           <ErrorState message={apiErrorMessage(publishMutation.error, 'Não foi possível publicar')} />
+        </div>
+      )}
+      {cancelMutation.error && (
+        <div className="mb-4">
+          <ErrorState message={apiErrorMessage(cancelMutation.error, 'Não foi possível cancelar')} />
         </div>
       )}
 
@@ -138,7 +166,9 @@ export function OrganizerEventDetailPage() {
           </p>
           {event.description && <p className="mt-3 text-sm text-text-muted">{event.description}</p>}
           <p className="mt-4 text-xs text-text-faint">
-            Evento publicado não pode mais ser editado por aqui.
+            {event.status === 'CANCELLED'
+              ? 'Evento cancelado — ingressos já emitidos não são mais válidos na portaria.'
+              : 'Evento publicado não pode mais ser editado por aqui.'}
           </p>
         </div>
       ) : (

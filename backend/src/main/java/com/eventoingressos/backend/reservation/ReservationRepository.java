@@ -8,4 +8,6 @@ import java.util.UUID;
 public interface ReservationRepository extends JpaRepository<Reservation, UUID> {
 
     List<Reservation> findByCustomerIdOrderByCreatedAtDesc(UUID customerId);
+
+    List<Reservation> findByEventIdAndStatus(UUID eventId, ReservationStatus status);
 }

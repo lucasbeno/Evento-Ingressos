@@ -11,6 +11,12 @@ import com.eventoingressos.backend.event.dto.CreateEventFromCatalogRequest;
 import com.eventoingressos.backend.event.dto.CreateEventRequest;
 import com.eventoingressos.backend.event.dto.EventResponse;
 import com.eventoingressos.backend.event.dto.UpdateEventRequest;
+import com.eventoingressos.backend.reservation.Reservation;
+import com.eventoingressos.backend.reservation.ReservationRepository;
+import com.eventoingressos.backend.reservation.ReservationStatus;
+import com.eventoingressos.backend.ticket.Ticket;
+import com.eventoingressos.backend.ticket.TicketRepository;
+import com.eventoingressos.backend.ticket.TicketStatus;
 import com.eventoingressos.backend.user.User;
 import com.eventoingressos.backend.user.UserRepository;
 import org.springframework.stereotype.Service;
@@ -31,12 +37,20 @@ public class EventService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final TicketmasterClient ticketmasterClient;
+    private final ReservationRepository reservationRepository;
+    private final TicketRepository ticketRepository;
 
     public EventService(
-            EventRepository eventRepository, UserRepository userRepository, TicketmasterClient ticketmasterClient) {
+            EventRepository eventRepository,
+            UserRepository userRepository,
+            TicketmasterClient ticketmasterClient,
+            ReservationRepository reservationRepository,
+            TicketRepository ticketRepository) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.ticketmasterClient = ticketmasterClient;
+        this.reservationRepository = reservationRepository;
+        this.ticketRepository = ticketRepository;
     }
 
     @Transactional
@@ -124,6 +138,35 @@ public class EventService {
         }
 
         event.setStatus(EventStatus.PUBLISHED);
+        return EventResponse.from(event);
+    }
+
+    /**
+     * "Retirar" um evento. Cancela junto as reservas pendentes de pagamento
+     * (o cliente não pode pagar por um evento que não vai mais acontecer —
+     * é aqui que entra a "devolução ao estoque") e os ingressos já pagos
+     * (para a portaria não validar como se o evento ainda estivesse de pé).
+     * Reservas já pagas continuam com status PAID — é fato histórico que
+     * foram pagas, isso não muda; só o ingresso em si é invalidado.
+     */
+    @Transactional
+    public EventResponse cancel(UUID eventId, AuthenticatedPrincipal organizerPrincipal) {
+        Event event = getOwnedByOrganizer(eventId, organizerPrincipal);
+
+        if (event.getStatus() == EventStatus.CANCELLED) {
+            throw new InvalidEventStateException("Este evento já está cancelado");
+        }
+
+        for (Reservation reservation : reservationRepository.findByEventIdAndStatus(
+                eventId, ReservationStatus.PENDING_PAYMENT)) {
+            reservation.setStatus(ReservationStatus.CANCELLED);
+        }
+
+        for (Ticket ticket : ticketRepository.findByEventIdAndStatus(eventId, TicketStatus.VALID)) {
+            ticket.setStatus(TicketStatus.CANCELLED);
+        }
+
+        event.setStatus(EventStatus.CANCELLED);
         return EventResponse.from(event);
     }
 

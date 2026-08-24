@@ -89,6 +89,8 @@ futura). O token vai no header `Authorization: Bearer <token>` nas demais requis
   qualquer status
 - `PUT /organizer/events/{id}` — edita (só enquanto `DRAFT`)
 - `POST /organizer/events/{id}/publish` — publica (só a partir de `DRAFT`)
+- `POST /organizer/events/{id}/cancel` — cancela o evento (opcional do desafio: "devolução ao
+  estoque"). Cancela reservas pendentes de pagamento e invalida ingressos já pagos daquele evento.
 
 #### Reservas
 

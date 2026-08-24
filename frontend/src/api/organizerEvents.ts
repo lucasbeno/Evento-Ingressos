@@ -43,3 +43,7 @@ export function updateEvent(id: string, payload: UpdateEventPayload) {
 export function publishEvent(id: string) {
   return client.post<EventSummary>(`/organizer/events/${id}/publish`).then((r) => r.data)
 }
+
+export function cancelEvent(id: string) {
+  return client.post<EventSummary>(`/organizer/events/${id}/cancel`).then((r) => r.data)
+}

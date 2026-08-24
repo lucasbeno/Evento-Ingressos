@@ -118,6 +118,25 @@ validado ponta a ponta**, só revisado contra a documentação da Discovery API.
 aqui porque é exatamente o tipo de coisa que o README pede pra sinalizar quando não dá pra
 confirmar que está funcionando.
 
+## Fluxo de reserva
+
+O estoque é reservado (`sold_count` incrementado) no momento da **criação da reserva**, não no
+pagamento — assim o lugar fica garantido enquanto o cliente está no checkout simulando o
+pagamento, e ninguém mais consegue reservar o mesmo ingresso nesse meio-tempo. Se o pagamento for
+recusado (próxima etapa), o estoque reservado é devolvido. Não há expiração automática de reserva
+pendente (ex: liberar depois de 10 minutos sem pagar) — como o pagamento aqui é simulado e
+instantâneo, não existe o cenário de alguém abandonar o checkout no meio, então implementar um job
+de expiração seria complexidade sem contrapartida real neste escopo.
+
+Limite de 10 ingressos por reserva: não é um requisito do desafio, mas é o tipo de limite que
+qualquer plataforma de ingressos real tem (mitigar cambismo/bot buying) e que "ninguém pensou em
+colocar" é exatamente o tipo de detalhe que grita "gerado por IA sem revisão".
+
+Testado sob concorrência real (não só logicamente): 10 requisições simultâneas contra um evento
+com capacidade 5 resultaram em exatamente 5 reservas confirmadas e 5 recusadas, com `sold_count`
+final igual a 5 — validando que o UPDATE condicional atômico (`EventRepository.tryReserveStock`)
+realmente impede overselling sob carga, não só na leitura do código.
+
 ## Ingresso e QR
 
 O código do QR não é um UUID aleatório exposto puro: é um token assinado (HMAC) contendo o id

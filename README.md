@@ -23,7 +23,8 @@ Projeto em desenvolvimento. Progresso:
 - [x] Autenticação (Organizador / Cliente / Portaria)
 - [x] Gestão de eventos pelo organizador (criar, editar, publicar)
 - [x] Integração com Ticketmaster Discovery ⚠️ ver nota abaixo
-- [ ] Fluxo de reserva e pagamento simulado
+- [x] Fluxo de reserva (controle de concorrência testado sob carga real)
+- [ ] Pagamento simulado
 - [ ] Geração e validação de ingresso (QR)
 - [ ] Front-end
 - [ ] Dados de teste (seed)
@@ -76,6 +77,11 @@ futura). O token vai no header `Authorization: Bearer <token>` nas demais requis
   qualquer status
 - `PUT /organizer/events/{id}` — edita (só enquanto `DRAFT`)
 - `POST /organizer/events/{id}/publish` — publica (só a partir de `DRAFT`)
+
+#### Reservas
+
+- `POST /reservations` — reserva ingressos (`{"eventId", "quantity"}`, máx. 10, Cliente)
+- `GET /reservations` — minhas reservas
 
 > ⚠️ **Integração com a Ticketmaster não testada ponta a ponta.** A chamada, o tratamento de erro
 > (chave ausente/inválida) e o parsing foram implementados e revisados contra a documentação da

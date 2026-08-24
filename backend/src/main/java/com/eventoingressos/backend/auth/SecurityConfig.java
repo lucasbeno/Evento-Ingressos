@@ -55,6 +55,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**", "/error").permitAll()
                         .requestMatchers(HttpMethod.GET, "/events", "/events/*").permitAll()
                         .requestMatchers("/organizer/**").hasRole("ORGANIZER")
+                        .requestMatchers("/reservations/**").hasRole("CUSTOMER")
                         .anyRequest().authenticated())
                 .exceptionHandling(handling -> handling
                         .authenticationEntryPoint((request, response, ex) -> {

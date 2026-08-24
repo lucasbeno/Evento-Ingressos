@@ -1,5 +1,6 @@
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
+import { Footer } from './Footer'
 
 const ROLE_HOME: Record<string, string> = {
   ORGANIZER: '/organizador',
@@ -89,9 +90,7 @@ export function Layout() {
         <Outlet />
       </main>
 
-      <footer className="border-t border-border/80 py-6 text-center text-xs text-text-faint">
-        Projeto para o desafio Elite Dev — Verzel
-      </footer>
+      <Footer />
     </div>
   )
 }

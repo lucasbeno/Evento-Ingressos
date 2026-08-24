@@ -26,8 +26,8 @@ Projeto em desenvolvimento. Progresso:
 - [x] Fluxo de reserva (controle de concorrência testado sob carga real)
 - [x] Pagamento simulado + geração de ingresso com QR assinado
 - [x] Compartilhamento de ingresso por link + validação na portaria
+- [x] Dados de teste (seed)
 - [ ] Front-end
-- [ ] Dados de teste (seed)
 - [ ] Deploy
 
 ## Como rodar
@@ -106,6 +106,21 @@ qualquer outro número de 13–19 dígitos aprova o pagamento.
 ### Front-end
 
 Instruções serão adicionadas quando o front-end for implementado.
+
+## Dados de teste
+
+A migration `V2__seed_data.sql` cria automaticamente, em qualquer banco novo, um organizador,
+dois clientes, um usuário de portaria e um evento publicado com ingressos disponíveis — não
+precisa montar nada manualmente para percorrer o fluxo.
+
+| Papel | E-mail | Senha |
+|---|---|---|
+| Organizador | `organizador@evento-ingressos.com` | `Senha123!` |
+| Cliente 1 | `cliente1@evento-ingressos.com` | `Senha123!` |
+| Cliente 2 | `cliente2@evento-ingressos.com` | `Senha123!` |
+| Portaria | `portaria@evento-ingressos.com` | `Senha123!` |
+
+Evento semeado: "Noite de Rock no Recife Antigo", Marco Zero (Recife), 100 ingressos, R$120,00.
 
 ## Uso de IA
 

@@ -189,6 +189,15 @@ Testados os quatro estados de ponta a ponta: ingresso do evento certo mas escane
 errado (`WRONG_EVENT`), código com assinatura adulterada (`INVALID`), validação correta
 (`VALID`, marca como usado) e a mesma validação repetida (`ALREADY_USED`, idempotente).
 
+## Dados de teste
+
+Seed via migration Flyway (`V2__seed_data.sql`) em vez de um `CommandLineRunner` condicional —
+já temos a infra de migrations versionadas, então é mais simples e mais consistente usar o mesmo
+mecanismo, sem precisar de lógica de "só popula se estiver vazio" na aplicação. IDs fixos e
+legíveis (`11111111-...`) só pra facilitar debug manual durante o desenvolvimento; não têm
+significado além disso. Hash da senha gerado com o mesmo `BCryptPasswordEncoder` usado em
+runtime, não hardcoded de outra fonte.
+
 ## Deploy
 
 Front-end na Vercel; back-end e banco em um serviço com suporte a container Java de longa duração

@@ -9,6 +9,15 @@ entrada, a portaria valida o ingresso.
 
 As decisões de arquitetura e escopo, e o porquê de cada uma, estão em [DECISIONS.md](./DECISIONS.md).
 
+## Aplicação publicada
+
+- **Front-end:** https://evento-ingressos.vercel.app
+- **Back-end:** https://evento-ingressos-backend.onrender.com
+
+> ⚠️ O back-end está no plano gratuito do Render, que "dorme" após ~15 minutos sem uso. A
+> primeira requisição depois disso pode levar 30–60s para responder enquanto a instância acorda —
+> normal, não é bug. As próximas são rápidas.
+
 ## Stack
 
 - **Back-end:** Java + Spring Boot, PostgreSQL (hospedado), Flyway, JWT
@@ -30,7 +39,7 @@ Projeto em desenvolvimento. Progresso:
 - [x] Front-end: fluxo do cliente (navegar, reservar, pagar, meus ingressos, compartilhar)
 - [x] Front-end: painel do organizador (criar/editar/publicar, catálogo Ticketmaster)
 - [x] Front-end: portaria (leitura de câmera + digitação manual)
-- [ ] Deploy
+- [x] Deploy (Vercel + Render, testado em produção — ver link acima)
 
 ## Como rodar
 

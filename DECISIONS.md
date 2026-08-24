@@ -213,7 +213,19 @@ back sempre rodaram na mesma origem lógica em dev (proxy do Vite); front e back
 domínios diferentes é a primeira vez que isso importa de verdade.
 
 Não consegui testar o `Dockerfile` localmente — a mesma ausência de Docker Desktop que motivou
-usar Postgres hospedado desde o início. A primeira validação real é o build do próprio Render.
+usar Postgres hospedado desde o início. A primeira validação real foi o build do próprio Render, e
+o build em si funcionou de primeira; o que falhou foi a aplicação não subir por causa de uma
+variável de ambiente (`JWT_SECRET`) que não ficou salva certinho ao preencher manualmente no
+dashboard do Render (sem `render.yaml` como Blueprint, cada variável precisa ser digitada uma por
+uma na UI). Diagnosticado pelo próprio log de erro do Spring
+(`PlaceholderResolutionException: Could not resolve placeholder 'JWT_SECRET'`) — recadastrando a
+variável, resolveu.
+
+**Publicado e testado em produção**: front-end na Vercel (https://evento-ingressos.vercel.app),
+back-end no Render (https://evento-ingressos-backend.onrender.com), ambos consumindo o mesmo
+Postgres no Neon. Validado depois do ar: navegação pública, login, e rota profunda do React
+Router acessada direto pela URL (não só navegação client-side) — confirma que o rewrite do
+`vercel.json` está funcionando.
 
 ## Imagem do evento na criação manual
 

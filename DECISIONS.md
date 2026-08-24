@@ -309,9 +309,38 @@ contra a definição de tipos da biblioteca instalada.
 
 ## Uso de IA
 
-Este projeto foi construído em par com Claude (Anthropic), usado como assistente de
-desenvolvimento dentro do editor. O README final vai detalhar em que partes a IA foi usada
-(scaffolding, boilerplate repetitivo) e quais decisões de arquitetura, UX e trade-offs foram
-minhas, conforme pedido no desafio.
+Todo o código deste projeto foi escrito com o Claude Code (Anthropic) — não foi "cola o PDF e
+recebe o projeto pronto", como o próprio desafio avisa que reconhecem de longe. Foi trabalho
+dividido em etapas (dá pra ver isso no histórico de commits: cada um fecha uma etapa do
+desenvolvimento, não é um único commit gigante), com uma decisão minha no início ou no meio de
+cada uma.
 
-*(este arquivo será atualizado a cada etapa do desenvolvimento)*
+**O que era meu, não da IA:**
+- Toda escolha de stack e escopo: Java/Spring Boot em vez de Node/Python, Ticketmaster em vez de
+  TMDb, pista em vez de mapa de assentos, Render em vez de Railway para o back-end — a IA sempre
+  apresentava as opções e o trade-off de cada uma, eu decidia.
+- A direção visual do front-end ("casa de show", verde-limão + magenta, Bebas Neue, o nome "ROLÊ"
+  em vez do nome do repositório) — pedi explicitamente pra fugir do visual SaaS genérico antes de
+  qualquer tela ser desenhada.
+- A ordem de prioridade (fluxo do cliente antes do painel do organizador, por exemplo) e quando
+  parar pra eu testar manualmente antes de seguir.
+- As contas em serviços externos (Neon, Ticketmaster, Render, Vercel) — a IA não cria contas nem
+  processa pagamento sozinha; eu criei cada uma e colei as chaves.
+- Encontrar e reportar o bug de deploy (variável `JWT_SECRET` não salva no Render) — eu que
+  colei o log de erro real da tela do Render pra IA diagnosticar.
+
+**O que foi a IA, sob minha direção:**
+- Toda a implementação: entidades, migrations, endpoints, componentes React, configuração de
+  deploy.
+- Testar o próprio trabalho de verdade (não só ler o código): rodar a aplicação localmente,
+  bater requisições reais contra o banco no Neon, disparar 10 requisições concorrentes pra provar
+  que o controle de estoque aguenta concorrência, dirigir o fluxo inteiro num navegador antes de
+  marcar qualquer etapa como pronta. Isso pegou bugs reais (alguns documentados acima) que não
+  apareceriam só lendo o código — e essa disciplina de "testar antes de dizer que terminou" foi
+  seguida a etapa inteira, não só quando pedi.
+- Identificar e explicar trade-offs técnicos nos pontos de decisão (ex: por que UPDATE condicional
+  atômico em vez de lock otimista, por que DTOs em vez de devolver entidades JPA cruas).
+
+Este arquivo (`DECISIONS.md`) foi escrito nesse processo, etapa por etapa, não depois — é o
+registro real das decisões conforme elas aconteceram, incluindo os bugs e os motivos de cada
+escolha, exatamente pra defender que decisão nenhuma aqui foi arbitrária.

@@ -25,7 +25,7 @@ Projeto em desenvolvimento. Progresso:
 - [x] Integração com Ticketmaster Discovery ⚠️ ver nota abaixo
 - [x] Fluxo de reserva (controle de concorrência testado sob carga real)
 - [x] Pagamento simulado + geração de ingresso com QR assinado
-- [ ] Validação de ingresso na portaria
+- [x] Compartilhamento de ingresso por link + validação na portaria
 - [ ] Front-end
 - [ ] Dados de teste (seed)
 - [ ] Deploy
@@ -84,6 +84,10 @@ futura). O token vai no header `Authorization: Bearer <token>` nas demais requis
 - `GET /reservations` — minhas reservas
 - `POST /reservations/{id}/pay` — paga a reserva (dados de cartão simulados, ver abaixo)
 - `GET /tickets/mine` — meus ingressos, com QR code
+- `GET /tickets/shared/{shareToken}` — visualização pública de um ingresso compartilhado (sem login)
+- `POST /gate/validate` — valida um ingresso na entrada (`{"eventId", "code"}`, Portaria).
+  `code` é o mesmo texto tanto para leitura de câmera quanto digitação manual. Resposta sempre
+  `200` com `result`: `VALID`, `INVALID`, `ALREADY_USED` ou `WRONG_EVENT`.
 
 #### Pagamento simulado
 

@@ -161,6 +161,34 @@ demais. O id é gerado em `PaymentService` (`UUID.randomUUID()`) e setado explic
 Cada unidade de uma reserva paga vira um `Ticket` individual com seu próprio QR — testado: reserva
 de 2 ingressos aprovada gera exatamente 2 tickets com QR codes distintos.
 
+## Compartilhamento
+
+`GET /tickets/shared/{shareToken}` é público (sem login) — quem recebe o link de alguém não tem
+conta necessariamente. `shareToken` é um UUID à parte do id do ingresso (gerado em `Ticket`), então
+adivinhar um não revela o outro, e o link pode ser compartilhado sem expor o id "de verdade" usado
+internamente pelas rotas autenticadas.
+
+## Validação na portaria
+
+Mesmo princípio da reserva de estoque, de novo: marcar o ingresso como usado é um **UPDATE
+condicional atômico** (`TicketRepository.tryMarkUsed`, só aplica se `status = VALID`), não um
+"ler, decidir na aplicação, gravar" — dois porteiros escaneando o mesmo ingresso ao mesmo tempo não
+podem os dois ver "válido". Já tinha resolvido esse exato problema de concorrência para
+`sold_count` na etapa de reserva; aqui é a mesma lição aplicada de novo, não descoberta do zero.
+
+`POST /gate/validate` recebe `eventId` (qual evento esta portaria está fazendo check-in agora) e
+`code` — a mesma string, venha da câmera ou digitada à mão, então a leitura por câmera no
+front-end não precisa de nenhum endpoint separado do fallback manual. O código é
+`"{ticketId}.{assinatura}"`; a portaria recomputa a assinatura via `QrCodeService.isValid` em vez
+de só buscar o id no banco — um `code` com id válido mas assinatura trocada retorna `INVALID`, não
+`VALID`. Devolve sempre `200` com um campo `result` (`VALID`/`INVALID`/`ALREADY_USED`/
+`WRONG_EVENT`), nunca um `4xx` — essas são as quatro respostas de negócio esperadas de uma
+validação, não erros de requisição.
+
+Testados os quatro estados de ponta a ponta: ingresso do evento certo mas escaneado no evento
+errado (`WRONG_EVENT`), código com assinatura adulterada (`INVALID`), validação correta
+(`VALID`, marca como usado) e a mesma validação repetida (`ALREADY_USED`, idempotente).
+
 ## Deploy
 
 Front-end na Vercel; back-end e banco em um serviço com suporte a container Java de longa duração

@@ -54,9 +54,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**", "/error").permitAll()
                         .requestMatchers(HttpMethod.GET, "/events", "/events/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/tickets/shared/*").permitAll()
                         .requestMatchers("/organizer/**").hasRole("ORGANIZER")
                         .requestMatchers("/reservations/**").hasRole("CUSTOMER")
                         .requestMatchers("/tickets/mine").hasRole("CUSTOMER")
+                        .requestMatchers("/gate/**").hasRole("GATE")
                         .anyRequest().authenticated())
                 .exceptionHandling(handling -> handling
                         .authenticationEntryPoint((request, response, ex) -> {

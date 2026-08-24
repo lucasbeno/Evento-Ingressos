@@ -1,4 +1,16 @@
-import type { GateValidationResult, ReservationStatus, TicketStatus } from '../types'
+import type { EventStatus, GateValidationResult, ReservationStatus, TicketStatus } from '../types'
+
+export const EVENT_STATUS_LABEL: Record<EventStatus, string> = {
+  DRAFT: 'Rascunho',
+  PUBLISHED: 'Publicado',
+  CANCELLED: 'Cancelado',
+}
+
+export const EVENT_STATUS_TONE: Record<EventStatus, 'neutral' | 'success' | 'danger'> = {
+  DRAFT: 'neutral',
+  PUBLISHED: 'success',
+  CANCELLED: 'danger',
+}
 
 export const RESERVATION_STATUS_LABEL: Record<ReservationStatus, string> = {
   PENDING_PAYMENT: 'Aguardando pagamento',

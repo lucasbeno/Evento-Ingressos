@@ -260,6 +260,27 @@ verdade num navegador contra o backend real — lendo o código isolado, os dois
 Corrigido do mesmo jeito que da primeira vez: o service devolve o DTO já mapeado dentro da
 transação (`getOwnedResponse`), não a entidade JPA crua.
 
+## Front-end: painel do organizador e portaria
+
+Criação de evento tem duas abas — manual e "do catálogo" — em vez de duas telas separadas, porque
+é a mesma ação (criar um rascunho de evento) com origem diferente dos dados; forçar duas rotas
+separadas criaria navegação sem necessidade. Ao escolher um item do catálogo, o formulário só pede
+capacidade e preço — título/imagem/local/data já vêm prontos da Ticketmaster (mesma lógica do
+back-end: são a fonte de verdade).
+
+Evento publicado não é mais editável pela tela de edição (mostra uma view somente leitura) —
+reflete a mesma regra que o back-end já impõe (`PUT` só aceita em `DRAFT`); a tela não devia
+oferecer um formulário que o servidor vai rejeitar.
+
+Portaria: câmera e digitação manual convergem pro mesmo estado (`code`), então o back-end nunca
+soube nem precisa saber qual dos dois foi usado. Leitura de câmera via `@zxing/browser`
+(`BrowserQRCodeReader.decodeFromVideoDevice`), carregada com `React.lazy` — só quem entra em
+`/portaria` baixa essa lib (usar câmera é peso que ninguém navegando eventos como cliente deveria
+pagar). Testado pela UI de verdade: seleção de evento, validação manual de um ingresso real pago
+(`VÁLIDO`) e revalidação do mesmo código (`JÁ UTILIZADO`) — a leitura por câmera em si não foi
+testada neste ambiente de desenvolvimento (sem acesso a uma câmera real aqui), só verificada
+contra a definição de tipos da biblioteca instalada.
+
 ## Uso de IA
 
 Este projeto foi construído em par com Claude (Anthropic), usado como assistente de

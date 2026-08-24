@@ -28,7 +28,8 @@ Projeto em desenvolvimento. Progresso:
 - [x] Compartilhamento de ingresso por link + validação na portaria
 - [x] Dados de teste (seed)
 - [x] Front-end: fluxo do cliente (navegar, reservar, pagar, meus ingressos, compartilhar)
-- [ ] Front-end: painel do organizador e tela de portaria
+- [x] Front-end: painel do organizador (criar/editar/publicar, catálogo Ticketmaster)
+- [x] Front-end: portaria (leitura de câmera + digitação manual)
 - [ ] Deploy
 
 ## Como rodar
@@ -116,6 +117,14 @@ npm run dev
 Abre em `http://localhost:5173`. Em desenvolvimento, o Vite faz proxy de `/api` para o back-end
 em `http://localhost:8080` (ver `vite.config.ts`) — não precisa de `.env` nem CORS configurado
 localmente. Rode o back-end primeiro.
+
+**Telas:**
+- Pública: navegação de eventos, ingresso compartilhado (`/ingressos/compartilhado/:token`)
+- Cliente: reservar, pagar, meus ingressos com QR (`/meus-ingressos`)
+- Organizador (`/organizador`): meus eventos, criar (manual ou do catálogo Ticketmaster), editar
+  rascunho, publicar
+- Portaria (`/portaria`): validar ingresso por leitura de câmera (QR) ou digitação manual — exige
+  permissão de câmera do navegador
 
 ## Dados de teste
 

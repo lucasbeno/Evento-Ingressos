@@ -30,13 +30,12 @@ export function Footer() {
           <a href={LINKEDIN_URL} target="_blank" rel="noreferrer" className="text-text-muted transition-colors hover:text-lime">
             LinkedIn
           </a>
-          <span className="text-text-faint">Desafio Elite Dev — Verzel</span>
         </div>
 
         <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="text-sm font-semibold text-text">Lucas Beno · © {year}</p>
-            <p className="mt-0.5 text-xs text-text-faint">Projeto desenvolvido para o desafio Elite Dev da Verzel.</p>
+            <p className="mt-0.5 text-xs text-text-faint">Plataforma de eventos e ingressos desenvolvida de ponta a ponta.</p>
           </div>
 
           <div className="flex items-center gap-3">
